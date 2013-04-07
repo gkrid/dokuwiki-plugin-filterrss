@@ -1,4 +1,4 @@
-README of dtable dokuwiki plugin
+README of filterrss dokuwiki plugin
 =================
 
 * &copy; Szymon Olewniczak, szymon.olewniczak@rid.pl, 2012-2013

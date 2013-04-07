@@ -3,5 +3,5 @@ author Szymon Olewniczak
 email szymon.olewniczak@rid.pl
 date 2013-04-06
 name filterrss 
-desc Display rss feed using bbcode
+desc Display RSS feed using simple filters.
 url http://www.dokuwiki.org/plugin:fliterrss
