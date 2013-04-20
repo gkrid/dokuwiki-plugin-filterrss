@@ -47,16 +47,15 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 	$sort = trim($query[1]);
 	//ASC ist't isteresting
-	$sort = str_ireplace(' asci', '', $sort);
+	$sort = preg_replace('/ asc$/i', '', $sort);
 
 	$desc = false;
-	$order_by = '';
-	if(stristr($sort, ' desc'))
+	if(preg_match('/ desc$/i', $sort))
 	{
-	    $sort = str_ireplace(' desc', '', $sort);
+	    $sort = preg_replace('/ desc$/i', '', $sort);
 	    $desc = true;
-	    $order_by = trim($sort);
 	}
+	$order_by = trim($sort);
 
 	$exploded = explode(' ', $args);
 	$url = $exploded[0];
@@ -253,7 +252,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 		{
 		    $renderer->doc .= '<div class="filterrss_plugin">';
 		    $renderer->doc .= '<a href="'.$entry['link'].'">'.$entry['title'].'</a><br>';
-		    $renderer->doc .= '<span>'.$entry['pubDate'].' '.date('d.m.Y',$entry['pubDate']).'</span>';
+		    $renderer->doc .= '<span>'.date('d.m.Y',$entry['pubDate']).'</span>';
 		    if($this->getConf('bbcode') == true)
 		    {
 			$renderer->doc .= '<p>'.$filterrss->bbcode_parse($entry['description']).'</p>';
