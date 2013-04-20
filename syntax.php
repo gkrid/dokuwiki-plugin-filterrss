@@ -32,18 +32,39 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
     function handle($match, $state, $pos, &$handler) {
 
+	//Remove ] from the end
+	$match = substr($match, 0, -1);
+	//Remove [filterrss
+	$match = substr($match, 10);
+
 	$known_fileds = array('pubDate', 'title', 'description', 'link');
 	$opposite_signs = array('>' => '<', '<' => '>', '>=' => '<=', '<=' => '>=');
 
-	$exploded = explode(' ', $match);
-	$url = $exploded[1];
+	$query = preg_split('/order by/i', $match);
+
+	$args = trim($query[0]);
+
+
+	$sort = trim($query[1]);
+	//ASC ist't isteresting
+	$sort = str_ireplace(' asci', '', $sort);
+
+	$desc = false;
+	$order_by = '';
+	if(stristr($sort, ' desc'))
+	{
+	    $sort = str_ireplace(' desc', '', $sort);
+	    $desc = true;
+	    $order_by = trim($sort);
+	}
+
+	$exploded = explode(' ', $args);
+	$url = $exploded[0];
 
 	//we have no arguments
 	if(count($exploded) < 3)
 	{
-	    //Remove ] from the end
-	    $url = substr($url, 0, -1);
-	    return array('url' => $url, 'conditions' => array());
+	    return array('url' => $url, 'conditions' => array(), 'order_by' => $order_by, 'desc' => $desc);
 	}
 	array_shift($exploded);
 	array_shift($exploded);
@@ -84,7 +105,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 		array_push($cond_output[$name], array($sign, $value));
 	}
-	return array('url' => $url, 'conditions' => $cond_output);
+	return array('url' => $url, 'conditions' => $cond_output, 'order_by' => $order_by, 'desc' => $desc);
     }
 
     function render($mode, &$renderer, $data) {
@@ -93,6 +114,12 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	    $filterrss =& plugin_load('helper', 'filterrss');
 
 	    $rss = simplexml_load_file($data['url']);
+	    $rss_array = array();
+
+	    //Varibles that allow us use php array_multisort
+	    $multi_array = array();
+	    $multi_k = 0;
+	    	
 	    if($rss)
 	    {
 		$items = $rss->channel->item;
@@ -177,24 +204,64 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 		    }
 		    if($jump_this_entry == false)
 		    {
-			$title = $item->title;
-			$link = $item->link;
-			$published_on = strtotime($item->pubDate);
-			$description = $item->description;
-			$renderer->doc .= '<div class="filterrss_plugin">';
-			$renderer->doc .= '<a href="'.$link.'">'.$title.'</a><br>';
-			$renderer->doc .= '<span>'.date('d.m.Y',$published_on).'</span>';
+			$entry = array();
+			
+			$entry['title'] = $item->title;
+			$multi_array['title'][$multi_k] = $item->title;
 
+			$entry['link'] = $item->link;
+			$multi_array['link'][$multi_k] = $item->link;
 
-			if($this->getConf('bbcode') == true)
-			{
-			    $renderer->doc .= '<p>'.$filterrss->bbcode_parse($description).'</p>';
-			} else
-			{
-			    $renderer->doc .= '<p>'.$description.'</p>';
-			}
-			$renderer->doc .= '</div>';
+			$entry['pubDate'] = strtotime($item->pubDate);
+			$multi_array['pubDate'][$multi_k] = strtotime($item->pubDate);
+
+			$entry['description'] = $item->description;
+			$multi_array['description'][$multi_k] = $item->description;
+			
+			$multi_k++;
+			array_push($rss_array, $entry);
+
 		    }
+		}
+		if(!empty($data['order_by']))
+		{
+		    switch($data['order_by'])
+		    {
+			case 'pubDate':
+			    if($data['desc'])
+			    {
+				array_multisort($multi_array[$data['order_by']], SORT_DESC , SORT_NUMERIC, $rss_array);
+			    } else
+			    {
+				array_multisort($multi_array[$data['order_by']], SORT_ASC , SORT_NUMERIC, $rss_array);
+			    }
+			break;
+			case 'title':
+			case 'description':
+			case 'link':
+			    if($data['desc'])
+			    {
+				array_multisort($multi_array[$data['order_by']], SORT_DESC, SORT_NATURAL,  $rss_array);
+			    } else
+			    {
+				array_multisort($multi_array[$data['order_by']], SORT_ASC , SORT_NATURAL,  $rss_array);
+			    }
+			break;
+		    }
+		}
+		foreach($rss_array as $entry)
+		{
+		    $renderer->doc .= '<div class="filterrss_plugin">';
+		    $renderer->doc .= '<a href="'.$entry['link'].'">'.$entry['title'].'</a><br>';
+		    $renderer->doc .= '<span>'.$entry['pubDate'].' '.date('d.m.Y',$entry['pubDate']).'</span>';
+		    if($this->getConf('bbcode') == true)
+		    {
+			$renderer->doc .= '<p>'.$filterrss->bbcode_parse($entry['description']).'</p>';
+		    } else
+		    {
+			$renderer->doc .= '<p>'.$entry['description'].'</p>';
+		    }
+		    $renderer->doc .= '</div>';
 		}
 	    } else
 	    {
