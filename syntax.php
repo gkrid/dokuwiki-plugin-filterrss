@@ -115,10 +115,6 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	    $rss = simplexml_load_file($data['url']);
 	    $rss_array = array();
 
-	    //Varibles that allow us use php array_multisort
-	    $multi_array = array();
-	    $multi_k = 0;
-	    	
 	    if($rss)
 	    {
 		$items = $rss->channel->item;
@@ -204,20 +200,11 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 		    if($jump_this_entry == false)
 		    {
 			$entry = array();
-			
 			$entry['title'] = $item->title;
-			$multi_array['title'][$multi_k] = $item->title;
-
 			$entry['link'] = $item->link;
-			$multi_array['link'][$multi_k] = $item->link;
-
 			$entry['pubDate'] = strtotime($item->pubDate);
-			$multi_array['pubDate'][$multi_k] = strtotime($item->pubDate);
-
 			$entry['description'] = $item->description;
-			$multi_array['description'][$multi_k] = $item->description;
 			
-			$multi_k++;
 			array_push($rss_array, $entry);
 
 		    }
@@ -227,26 +214,18 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 		    switch($data['order_by'])
 		    {
 			case 'pubDate':
-			    if($data['desc'])
-			    {
-				array_multisort($multi_array[$data['order_by']], SORT_DESC , SORT_NUMERIC, $rss_array);
-			    } else
-			    {
-				array_multisort($multi_array[$data['order_by']], SORT_ASC , SORT_NUMERIC, $rss_array);
-			    }
+			    $rss_array = $filterrss->int_sort($rss_array, $data['order_by']);
 			break;
 			case 'title':
 			case 'description':
 			case 'link':
-			    if($data['desc'])
-			    {
-				array_multisort($multi_array[$data['order_by']], SORT_DESC, SORT_NATURAL,  $rss_array);
-			    } else
-			    {
-				array_multisort($multi_array[$data['order_by']], SORT_ASC , SORT_NATURAL,  $rss_array);
-			    }
+			    $rss_array = $filterrss->nat_sort($rss_array, $data['order_by']);
 			break;
 		    }
+		    if($data['desc'])
+		    {
+			$rss_array = array_reverse($rss_array);
+		    } 
 		}
 		foreach($rss_array as $entry)
 		{
