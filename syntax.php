@@ -44,27 +44,43 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 	$args = trim($query[0]);
 
-
-	$sort = trim($query[1]);
-	//ASC ist't isteresting
-
-	$desc = false;
-	if(stripos('desc', $sort) !== false)
+	if( isset( $query[1] ) )
 	{
-	    $sort = str_ireplace('desc', '', $sort);
-	    $desc = true;
-	}
-	//check if we define limit
-	//I believe this's enough
-	$limit = 99999999;
-	$limit_reg = '/limit\s*([0-9]*)/i';
-	if(preg_match($limit_reg, $sort, $matches) )
-	{
-	    $limit = (int)$matches[1];
-	    preg_replace($limit_reg, '', $sort);
-	}
+	    $sort = trim($query[1]);
+	    //ASC ist't isteresting
+	    $sort = str_ireplace('asc', '', $sort);
 
-	$order_by = trim($sort);
+	    $desc = false;
+	    if(stripos($sort, 'desc') !== false)
+	    {
+		$sort = str_ireplace('desc', '', $sort);
+		$desc = true;
+	    }
+
+	    //check if we define limit
+	    //I believe this's enough
+	    $limit = 99999999;
+	    $limit_reg = '/limit\s*([0-9]*)/i';
+	    if(preg_match($limit_reg, $sort, $matches) )
+	    {
+		$limit = (int)$matches[1];
+		$sort = preg_replace($limit_reg, '', $sort);
+	    }
+
+	    $order_by = trim($sort);
+	} else
+	{
+	    //check if we define limit
+	    //I believe this's enough
+	    $limit = 99999999;
+	    $limit_reg = '/limit\s*([0-9]*)\s*$/i';
+	    if(preg_match($limit_reg, $args, $matches) )
+	    {
+		$limit = (int)$matches[1];
+		$query = preg_replace($limit_reg, '', $query);
+	    }
+
+	}
 
 	$exploded = explode(' ', $args);
 	$url = $exploded[0];
@@ -222,6 +238,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 		    }
 		}
+		var_dump($data);
 		if(!empty($data['order_by']))
 		{
 		    switch($data['order_by'])
