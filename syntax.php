@@ -47,14 +47,23 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 	$sort = trim($query[1]);
 	//ASC ist't isteresting
-	$sort = preg_replace('/ asc$/i', '', $sort);
 
 	$desc = false;
-	if(preg_match('/ desc$/i', $sort))
+	if(stripos('desc', $sort) !== false)
 	{
-	    $sort = preg_replace('/ desc$/i', '', $sort);
+	    $sort = str_ireplace('desc', '', $sort);
 	    $desc = true;
 	}
+	//check if we define limit
+	//I believe this's enough
+	$limit = 99999999;
+	$limit_reg = '/limit\s*([0-9]*)/i';
+	if(preg_match($limit_reg, $sort, $matches) )
+	{
+	    $limit = (int)$matches[1];
+	    preg_replace($limit_reg, '', $sort);
+	}
+
 	$order_by = trim($sort);
 
 	$exploded = explode(' ', $args);
@@ -63,7 +72,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	//we have no arguments
 	if(count($exploded) < 3)
 	{
-	    return array('url' => $url, 'conditions' => array(), 'order_by' => $order_by, 'desc' => $desc);
+	    return array('url' => $url, 'conditions' => array(), 'order_by' => $order_by, 'desc' => $desc, 'limit' => $limit);
 	}
 	array_shift($exploded);
 	array_shift($exploded);
@@ -104,7 +113,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 		array_push($cond_output[$name], array($sign, $value));
 	}
-	return array('url' => $url, 'conditions' => $cond_output, 'order_by' => $order_by, 'desc' => $desc);
+	return array('url' => $url, 'conditions' => $cond_output, 'order_by' => $order_by, 'desc' => $desc, 'limit' => $limit);
     }
 
     function render($mode, &$renderer, $data) {
@@ -118,8 +127,12 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	    if($rss)
 	    {
 		$items = $rss->channel->item;
+		$items_count = 0;
 		foreach($items as $item)
 		{
+		    if( $items_count >= $data['limit'])
+			break;
+		    $items_count++;
 		    $jump_this_entry = false;
 		    foreach($data['conditions'] as $entry => $conditions)
 		    {
