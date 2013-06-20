@@ -1,7 +1,7 @@
 base filterrss 
 author Szymon Olewniczak
 email szymon.olewniczak@rid.pl
-date 2013-04-06
+date 2013-09-20
 name filterrss 
-desc Display RSS feed using simple filters.
+desc Filter, sort and limitate RSS feeds.
 url http://www.dokuwiki.org/plugin:fliterrss

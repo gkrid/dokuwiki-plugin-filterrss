@@ -238,7 +238,6 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 
 		    }
 		}
-		var_dump($data);
 		if(!empty($data['order_by']))
 		{
 		    switch($data['order_by'])
