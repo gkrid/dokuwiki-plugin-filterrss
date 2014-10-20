@@ -27,8 +27,14 @@ class action_plugin_filterrss extends DokuWiki_Action_Plugin {
      */
     function _preventCache(&$event, $param) 
     {
-	$event->preventDefault();
-	$event->stopPropagation();
-	$event->result = false;
+	$cache = $event->data;
+	if ($cache->mode != 'xhtml') return;
+	if (!isset($cache->page)) return;
+	$meta = p_get_metadata($cache->page, 'plugin_filterrss');
+	if (is_array($meta) && $meta['purge']) {
+	    $event->preventDefault();
+	    $event->stopPropagation();
+	    $event->result = false;
+	}
     }
 }

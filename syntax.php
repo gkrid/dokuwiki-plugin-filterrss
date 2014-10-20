@@ -275,7 +275,9 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 		$renderer->doc .= 'Cannot load rss feed.';
 	    }
 	    return true;
-        }
+        } elseif ($mode == "metadata") {
+	    $renderer->meta['plugin_filterrss']['purge'] = true;
+	}
         return false;
     }
 }
