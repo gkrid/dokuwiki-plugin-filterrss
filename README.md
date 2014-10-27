@@ -1,8 +1,8 @@
 README of filterrss dokuwiki plugin
 =================
 
-* &copy; Szymon Olewniczak, szymon.olewniczak@rid.pl, 2012-2013
-* This application is licenced under [GNU General Public License, Version 3.0]
+* &copy; Szymon Olewniczak and contributors 2012-2014
+* This application is licensed under [GNU General Public License, Version 3.0]
 
 All documentation for this plugin can be found at
 http://www.dokuwiki.org/plugin:filterrss
