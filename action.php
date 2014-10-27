@@ -3,7 +3,8 @@
  * Plugin Now: Inserts a timestamp.
  * 
  * @license    GPL 3 (http://www.gnu.org/licenses/gpl.html)
- * @author     Szymon Olewniczak <szymon.olewniczak@rid.pl>
+ * @author     Szymon Olewniczak <dokuwiki@imz.re>
+ * @author     Cejka Rudolf <cejkar@fit.vutbr.cz>
  */
 
 // must be run within DokuWiki
