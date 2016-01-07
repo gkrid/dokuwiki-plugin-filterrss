@@ -1,7 +1,7 @@
 base filterrss 
 author Szymon Olewniczak
 email dokuwiki@imz.re
-date 2014-10-20
+date 2014-10-27
 name filterrss 
 desc Filter, sort and limitate RSS feeds.
 url http://www.dokuwiki.org/plugin:filterrss
