@@ -1,9 +1,7 @@
 <?php
 /**
- * Plugin Now: Inserts a timestamp.
- * 
  * @license    GPL 3 (http://www.gnu.org/licenses/gpl.html)
- * @author     Szymon Olewniczak <dokuwiki@imz.re>
+ * @author     Szymon Olewniczak <(my first name) [at] imz [dot] re>
  * @author     Cejka Rudolf <cejkar@fit.vutbr.cz>
  */
 
