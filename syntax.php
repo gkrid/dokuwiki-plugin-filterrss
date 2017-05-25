@@ -29,7 +29,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	$this->Lexer->addSpecialPattern('\[filterrss.*?\]',$mode,'plugin_filterrss');
     }
 
-    function handle($match, $state, $pos, &$handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler) {
 
 	//Remove ] from the end
 	$match = substr($match, 0, -1);
@@ -131,7 +131,7 @@ class syntax_plugin_filterrss extends DokuWiki_Syntax_Plugin {
 	return array('url' => $url, 'conditions' => $cond_output, 'order_by' => $order_by, 'desc' => $desc, 'limit' => $limit);
     }
 
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         if($mode == 'xhtml') {
 
 	    $filterrss =& plugin_load('helper', 'filterrss');

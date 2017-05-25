@@ -16,7 +16,7 @@ require_once DOKU_PLUGIN.'syntax.php';
  * need to inherit from this class
  */
 class action_plugin_filterrss extends DokuWiki_Action_Plugin {
-    function register(&$controller) {
+    function register(Doku_Event_Handler $controller) {
 	$controller->register_hook('PARSER_CACHE_USE', 'BEFORE', $this, '_preventCache', array ());
     }
     /**
