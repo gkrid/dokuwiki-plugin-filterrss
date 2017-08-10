@@ -1,6 +1,6 @@
 base filterrss 
 author Szymon Olewniczak
-email (my first name) [at] imz [dot] re
+email solewniczak@rid.pl
 date 2014-10-27
 name filterrss 
 desc Filter, sort and limitate RSS feeds.
